@@ -5,6 +5,9 @@ import "hardhat/console.sol";
 
 contract CommitReveal {
 
+  event RevealHash(address sender, bytes32 revealHash, uint8 random);
+  event CommitHash(address sender, bytes32 dataHash, uint64 block);
+
   struct Commit {
     bytes32 commit;
     uint64 block;
@@ -26,6 +29,8 @@ contract CommitReveal {
     commits[msg.sender].block = block_number;
     commits[msg.sender].revealed = false;
     console.log(block.number, block_number);
+
+    emit CommitHash(msg.sender,commits[msg.sender].commit,commits[msg.sender].block);
   }
 
   function reveal(bytes32 revealHash) public {
@@ -36,6 +41,8 @@ contract CommitReveal {
     bytes32 blockHash = blockhash(commits[msg.sender].block);
     uint8 random = uint8(uint(keccak256(abi.encodePacked(blockHash,revealHash)))) % max;
     console.log("Random: ", random);
+
+    emit RevealHash(msg.sender,revealHash,random);
   }
 
 }
