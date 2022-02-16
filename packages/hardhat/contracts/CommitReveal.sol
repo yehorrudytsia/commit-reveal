@@ -28,4 +28,14 @@ contract CommitReveal {
     console.log(block.number, block_number);
   }
 
+  function reveal(bytes32 revealHash) public {
+    require(commits[msg.sender].revealed==false,"CommitReveal::reveal: Already revealed");
+    require(getHash(revealHash)==commits[msg.sender].commit,
+    "CommitReveal::reveal: Revealed hash does not match commit");
+    commits[msg.sender].revealed=true;
+    bytes32 blockHash = blockhash(commits[msg.sender].block);
+    uint8 random = uint8(uint(keccak256(abi.encodePacked(blockHash,revealHash)))) % max;
+    console.log("Random: ", random);
+  }
+
 }
